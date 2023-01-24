@@ -22,7 +22,7 @@ class Category extends Model
     // $query hace referencia a la consulta que estamos haciendo en el controlador--- Category::included()->findOrFail($id);
     public function scopeIncluded(Builder $query)
     {
-        if(empty($this->allowInclude) ||empty(request('included'))){
+        if(empty($this->allowInclude) || empty(request('included'))){
             return;
         }
         // request es un helper que trae los parametros que viene por la url
@@ -35,8 +35,6 @@ class Category extends Model
                 unset($relations[$key]);
             }
         }
-
-
         $query->with($relations);
     }
 }
