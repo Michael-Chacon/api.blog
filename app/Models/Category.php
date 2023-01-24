@@ -9,8 +9,10 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model
 {
     protected $fillable = ['name', 'slug'];
-
+    // Relaciones del modelo 
     protected $allowInclude = ['posts', 'posts.user'];
+    // Columnas de la tabla categories
+    protected $allowFilter = ['id', 'name', 'slug'];
 
     use HasFactory;
 
@@ -19,7 +21,10 @@ class Category extends Model
         return $this->hasMany(Post::class);
     }
 
-    // $query hace referencia a la consulta que estamos haciendo en el controlador--- Category::included()->findOrFail($id);
+    /* 
+    Scope para añadir relaciones a la consulta de las categorias 
+    $query hace referencia a la consulta que estamos haciendo en el controlador--- Category::included()->findOrFail($id);
+    */
     public function scopeIncluded(Builder $query)
     {
         if(empty($this->allowInclude) || empty(request('included'))){
@@ -36,5 +41,23 @@ class Category extends Model
             }
         }
         $query->with($relations);
+    }
+
+    // scope para añadir paremetros a la consulta
+    public function scopeFilter(Builder $query)
+    {
+        // validar cuando no hay parametros de busqueda en la url
+        if(empty($this->allowFilter) || empty(request('filter'))){
+            return;
+        }
+
+        $filters = request('filter');
+        $allowFilter = collect($this->allowFilter);
+
+        foreach($filters as $colum => $value){
+            if($allowFilter->contains($colum)){
+                $query->where($colum,'LIKE', '%' . $value . '%');
+            }
+        }
     }
 }
