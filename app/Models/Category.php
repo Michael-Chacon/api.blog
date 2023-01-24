@@ -76,15 +76,27 @@ class Category extends Model
         foreach($parameters as $sortfield){
             // el orden por defento de las consultas en ascendente
             $orden = 'ASC';
-            // Si el primer caracter de la variable es un - significa que debemos ordenar la consulta de forma descendente asi que camviamos el valor de $order y le quemos el signo - a la consulta para que el parametro de orden quede limpio 
+            /* Si el primer caracter de la variable es un - significa que debemos ordenar la consulta de forma descendente 
+            asi que camviamos el valor de $order y le quitamos el signo - a la consulta para que el parametro de orden quede limpio */
             if(substr($sortfield, 0, 1) == '-'){
                 $orden = 'DESC';
                 $sortfield = substr($sortfield, 1);
             }
-            
+            // Ejecutar la consulta.
             if($allowSort->contains($sortfield)){
                 $query->OrderBy($sortfield, $orden);
             }
         }
+    }
+
+    public function scopeGetOrPagination(Builder $query)
+    {
+        if(request('perPag')){
+            $perPag = intval(request('perPag'));
+            if($perPag){
+                return $query->paginate($perPag);
+            }
+        }
+        return $query->get();
     }
 }
