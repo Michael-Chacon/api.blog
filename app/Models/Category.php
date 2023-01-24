@@ -13,6 +13,8 @@ class Category extends Model
     protected $allowInclude = ['posts', 'posts.user'];
     // Columnas de la tabla categories
     protected $allowFilter = ['id', 'name', 'slug'];
+    // Columnas por las vuales se pueden ordenar las consultas
+    protected $allowSort = ['id', 'name', 'slug'];
 
     use HasFactory;
 
@@ -57,6 +59,31 @@ class Category extends Model
         foreach($filters as $colum => $value){
             if($allowFilter->contains($colum)){
                 $query->where($colum,'LIKE', '%' . $value . '%');
+            }
+        }
+    }
+
+    // Ordenar las conuslta por parametros 
+    public function scopeSort(Builder $query)
+    {
+        if(empty($this->allowSort) || empty(request('sort'))){
+            return;
+        }
+
+        $parameters = explode(',', request('sort'));
+        $allowSort = collect($this->allowSort);
+
+        foreach($parameters as $sortfield){
+            // el orden por defento de las consultas en ascendente
+            $orden = 'ASC';
+            // Si el primer caracter de la variable es un - significa que debemos ordenar la consulta de forma descendente asi que camviamos el valor de $order y le quemos el signo - a la consulta para que el parametro de orden quede limpio 
+            if(substr($sortfield, 0, 1) == '-'){
+                $orden = 'DESC';
+                $sortfield = substr($sortfield, 1);
+            }
+            
+            if($allowSort->contains($sortfield)){
+                $query->OrderBy($sortfield, $orden);
             }
         }
     }
