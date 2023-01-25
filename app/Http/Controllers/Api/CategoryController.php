@@ -34,7 +34,7 @@ class CategoryController extends Controller
         ]);
 
         $category = Category::create($request->all());
-        return $category;
+        return CategoryResource::make($category);
     }
 
     /**
@@ -64,7 +64,7 @@ class CategoryController extends Controller
         ]);
 
         $category->update($request->all());
-        return $category;
+        return CategoryResource::make($category);
     }
 
     /**
@@ -76,6 +76,6 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         $category->delete();
-        return $category;
+        return CategoryResource::make($category);
     }
 }
