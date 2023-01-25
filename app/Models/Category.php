@@ -89,6 +89,7 @@ class Category extends Model
         }
     }
 
+    // Devolver los resultados paginados o no 
     public function scopeGetOrPagination(Builder $query)
     {
         if(request('perPag')){
