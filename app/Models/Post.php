@@ -8,6 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
+    protected $fillable = [
+        'name',
+        'slug', 
+        'stract',
+        'body',
+        'status',
+        'category_id',
+        'user_id',
+    ];
+
+    // Relaciones del modelo 
+    protected $allowInclude = ['category', 'tags', 'images', 'user'];
+    // Columnas de la tabla categories
+    protected $allowFilter = ['id', 'name', 'slug'];
+    // Columnas por las vuales se pueden ordenar las consultas
+    protected $allowSort = ['id', 'name', 'slug'];
+
     use HasFactory, ApiTrait;
 
     const BORRADOR = 0;
