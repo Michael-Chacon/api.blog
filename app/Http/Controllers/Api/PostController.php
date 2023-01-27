@@ -33,7 +33,6 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        return auth()->user();
         $data = $request->validate([
             'name' => 'required|string|max:50',
             'slug' => 'required|string|unique:posts',
@@ -42,6 +41,7 @@ class PostController extends Controller
             'status' => 'required',
             'category_id' => 'required|exists:categories,id', 
         ]);
+        
         $user = auth()->user();
         $data['user_id'] = $user->id;
 
