@@ -26,6 +26,15 @@
             </section>
             <section  class="md:col-span-2 mt-5">
                 <article class="p-6 bg-black text-white shadow rounded-lg">
+                    <section v-if="createForm.errors.length > 0" class="mb-5 py-5 px-2 bg-red-200 text-black">
+                        <strong>Whooops!!</strong>
+                        <span>Also salio mal</span>
+                        <ul>
+                            <li v-for="errores in createForm.errors">
+                                @{{ errores }}
+                            </li>   
+                        </ul>
+                    </section>
                     <div>
                         <x-input-label for="name" :value="__('Nombre:')" />
                         <x-text-input  v-model="createForm.name" class="block mt-1 w-full" type="text" :value="old('name')" required autofocus />
@@ -38,13 +47,13 @@
                     </div>
                 </article>
                 <article class="p-3 mt-3 text-white shadow rounded-lg flex justify-end items-center">
-                    <x-secondary-button v-on:click="store">
+                    <x-secondary-button v-on:click="store" v-bind:disabled="createForm.disabled">
                         Guardar
                     </x-secondary-button>
                 </article>
             </section>
         </section>
-        <section class="md:grid md:grid-cols-3 gap-6 text-white mt-10">
+        <section v-if="clients.length > 0" class="md:grid md:grid-cols-3 gap-6 text-white mt-10">
             <section class="md:col-span-1">
                 <h3 class="text-center">
                     Listado de  cliente 
@@ -88,6 +97,7 @@
                     clients: [],
                     createForm:{
                         errors: [],
+                        disabled: false,
                         name: null,
                         redirect: null,
                     }
@@ -103,6 +113,7 @@
                         });
                     },
                     store(){
+                        this.createForm.disabled = true;
                         axios.post('/oauth/clients', this.createForm)
                         .then(response => {
                             this.createForm.name = null;
@@ -110,12 +121,15 @@
                             Swal.fire({
                                 position: 'top-end',
                                 icon: 'success',
-                                title: 'Your work has been saved',
+                                title: 'Tu cliente a sido creaco con éxito',
                                 showConfirmButton: false,
                                 timer: 1500
                             });
+                            this.getClients();
+                            this.createForm.disabled = false;
                         }).catch(error => {
-                            alert('No has completado los datos suficientes');
+                            this.createForm.errors = _.flatten(_.toArray(error.response.data.errors));
+                            this.createForm.disabled = false;
                         })
                     }
                 }
