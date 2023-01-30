@@ -14,7 +14,8 @@
             </div>
         </div>
     </div>
-    <section id="app" class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div id="app">
+    <section class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <section  class="md:grid md:grid-cols-3 gap-6 text-white">
             <section class="md:col-span-1">
                 <h3 class="text-center">
@@ -76,7 +77,7 @@
                                 @{{client.name}}
                             </td>
                             <td class="flex text-white divide-x divide-gray-500 py-3">
-                                <a href="" class="pr-2 hover:text-blue-600 cursor-pointer">
+                                <a v-on:click="edit(client)" class="pr-2 hover:text-blue-600 cursor-pointer">
                                     Editar
                                 </a>
                                 <a v-on:click="destroy(client)" class="pl-2 hover:text-red-600 cursor-pointer">
@@ -89,6 +90,36 @@
             </section>
         </section>
     </section>
+    {{-- Modal --}}
+    <x-dialog-modal modal="editForm.open">
+        <x-slot name="title">
+            Titulo dle modal
+        </x-slot>
+        <x-slot name="content" class="w-full">
+                <section v-if="editForm.errors.length > 0" class="mb-5 py-5 px-2 bg-red-200 text-black">
+                    <strong>Whooops!!</strong>
+                    <span>Also salio mal</span>
+                    <ul>
+                        <li v-for="errores in editForm.errors">
+                            @{{ errores }}
+                        </li>   
+                    </ul>
+                </section>
+                <div class="w-full">
+                    <x-input-label for="name" :value="__('Nombre:')" />
+                    <x-text-input  v-model="editForm.name" class="mt-1 w-full" type="text" :value="old('name')" required autofocus />
+                    <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                </div>
+                <div class="mt-3">
+                    <x-input-label for="url" :value="__('Url de redirección:')" />
+                    <x-text-input id="url" v-model="editForm.redirect" class="mt-1 w-full" type="text"  :value="old('url')" required autofocus />
+                    <x-input-error :messages="$errors->get('url')" class="mt-2" />
+                </div>
+                
+        </x-slot>
+
+    </x-dialog-modal>
+    </div>
     @push('js')
         <script>
             new Vue ({
@@ -100,7 +131,14 @@
                         disabled: false,
                         name: null,
                         redirect: null,
-                    }
+                    },
+                    editForm:{
+                        open: false,     
+                        errors: [],
+                        disabled: false,
+                        name: null,
+                        redirect: null,
+                    },
                 }, 
                 mounted(){
                     this.getClients();
@@ -118,6 +156,7 @@
                         .then(response => {
                             this.createForm.name = null;
                             this.createForm.redirect = null;
+                            this.createForm.errors = [];
                             Swal.fire({
                                 position: 'top-end',
                                 icon: 'success',
@@ -154,6 +193,9 @@
                                 )
                             }
                         })
+                    },
+                    edit(client){
+                        this.editForm.open = true;
                     }
                 }
             });
