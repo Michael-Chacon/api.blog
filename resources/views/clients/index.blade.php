@@ -77,7 +77,10 @@
                                 @{{client.name}}
                             </td>
                             <td class="flex text-white divide-x divide-gray-500 py-3">
-                                <a v-on:click="edit(client)" class="pr-2 hover:text-blue-600 cursor-pointer">
+                                <a v-on:click="show(client)" class="pr-2 hover:text-green-600 cursor-pointer">
+                                    Ver
+                                </a>
+                                <a v-on:click="edit(client)" class="px-2 hover:text-blue-600 cursor-pointer">
                                     Editar
                                 </a>
                                 <a v-on:click="destroy(client)" class="pl-2 hover:text-red-600 cursor-pointer">
@@ -90,10 +93,10 @@
             </section>
         </section>
     </section>
-    {{-- Modal --}}
+    {{-- Modal edit client --}}
     <x-dialog-modal modal="editForm.open">
         <x-slot name="title">
-            Titulo dle modal
+            Editar datos del cliente
         </x-slot>
         <x-slot name="content" class="w-full">
                 <section v-if="editForm.errors.length > 0" class="mb-5 py-5 px-2 bg-red-200 text-black">
@@ -126,6 +129,41 @@
         </x-slot>
 
     </x-dialog-modal>
+    {{-- Modal show client --}}
+    <x-dialog-modal modal="showClient.open">
+        <x-slot name="title">
+            Ver datos del cliente
+        </x-slot>
+        <x-slot name="content" class="w-full">
+            <section class="space-y-2">
+                <p>
+                    <span class="font-bold">
+                        CLIENT:
+                    </span>
+                    <span v-text="showClient.name">   
+                    </span>
+                </p>
+                <p>
+                    <span class="font-bold">
+                        CLIENT_ID:
+                    </span>
+                    <span v-text="showClient.id"></span>
+                </p>
+                <p>
+                    <span class="font-bold">
+                        CLIENT_SECRET:
+                    </span>
+                    <span v-text="showClient.secret"></span>
+                </p>
+            </section>
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button v-on:click="showClient.open = false" type="button" class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-gray-50 hover:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+        </x-slot>
+
+    </x-dialog-modal>
     </div>
     @push('js')
         <script>
@@ -133,6 +171,12 @@
                 el: '#app',
                 data:{
                     clients: [],
+                    showClient: {
+                        open: false,
+                        name: null,
+                        id: null,
+                        secret: null
+                    },
                     createForm:{
                         errors: [],
                         disabled: false,
@@ -158,6 +202,12 @@
                             this.clients = response.data
                         });
                     },
+                    show(client){
+                        this.showClient.open = true;
+                        this.showClient.name = client.name;
+                        this.showClient.id = client.id;
+                        this.showClient.secret = client.secret;
+                    },
                     store(){
                         this.createForm.disabled = true;
                         axios.post('/oauth/clients', this.createForm)
@@ -165,13 +215,14 @@
                             this.createForm.name = null;
                             this.createForm.redirect = null;
                             this.createForm.errors = [];
-                            Swal.fire({
-                                position: 'top-end',
-                                icon: 'success',
-                                title: 'Tu cliente a sido creaco con éxito',
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
+                            // Swal.fire({
+                            //     position: 'top-end',
+                            //     icon: 'success',
+                            //     title: 'Tu cliente a sido creaco con éxito',
+                            //     showConfirmButton: false,
+                            //     timer: 1500
+                            // });
+                            this.show(response.data);
                             this.getClients();
                             this.createForm.disabled = false;
                         }).catch(error => {
@@ -181,7 +232,7 @@
                     },
                     edit(client){
                         this.editForm.open = true;
-                        this.editForm.errors = [],
+                        this.editForm.errors = [];
                         this.editForm.id = client.id;
                         this.editForm.name = client.name;
                         this.editForm.redirect = client.redirect;
@@ -198,7 +249,7 @@
                             Swal.fire({
                                 position: 'top-end',
                                 icon: 'success',
-                                title: 'Tu cliente a sido creaco con éxito',
+                                title: 'Tu cliente a sido actualizado con éxito',
                                 showConfirmButton: false,
                                 timer: 1500
                             });
