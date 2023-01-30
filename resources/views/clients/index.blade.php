@@ -106,16 +106,23 @@
                     </ul>
                 </section>
                 <div class="w-full">
-                    <x-input-label for="name" :value="__('Nombre:')" />
+                    <x-input-label for="name" :value="__('Nombre:')" class="text-black"/>
                     <x-text-input  v-model="editForm.name" class="mt-1 w-full" type="text" :value="old('name')" required autofocus />
                     <x-input-error :messages="$errors->get('name')" class="mt-2" />
                 </div>
                 <div class="mt-3">
-                    <x-input-label for="url" :value="__('Url de redirección:')" />
+                    <x-input-label for="url" :value="__('Url de redirección:')" class="text-black" />
                     <x-text-input id="url" v-model="editForm.redirect" class="mt-1 w-full" type="text"  :value="old('url')" required autofocus />
                     <x-input-error :messages="$errors->get('url')" class="mt-2" />
                 </div>
-                
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button v-on:click="update" v.bind.disabled_="editForm.disabled" type="button" class="disabled:opacity-75 inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-500 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm">
+                        Actualizar
+                    </button>
+                    <button v-on:click="editForm.open = false" type="button" class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-gray-50 hover:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
         </x-slot>
 
     </x-dialog-modal>
@@ -136,6 +143,7 @@
                         open: false,     
                         errors: [],
                         disabled: false,
+                        id: null,
                         name: null,
                         redirect: null,
                     },
@@ -171,6 +179,36 @@
                             this.createForm.disabled = false;
                         })
                     },
+                    edit(client){
+                        this.editForm.open = true;
+                        this.editForm.errors = [],
+                        this.editForm.id = client.id;
+                        this.editForm.name = client.name;
+                        this.editForm.redirect = client.redirect;
+                    },
+                    update(){
+                        this.editForm.disabled = true;
+                        axios.put('/oauth/clients/'+this.editForm.id, this.editForm)
+                        .then(response => {
+                            this.editForm.disabled = false;
+                            this.editForm.open = false;
+                            this.editForm.name = null;
+                            this.editForm.redirect = null;
+                            this.editForm.errors = [];
+                            Swal.fire({
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Tu cliente a sido creaco con éxito',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            this.getClients();
+                            this.editForm.disabled = false;
+                        }).catch(error => {
+                            this.editForm.errors = _.flatten(_.toArray(error.response.data.errors));
+                            this.editForm.disabled = false;
+                        })
+                    },
                     destroy(client){
                         Swal.fire({
                             title: 'Are you sure?',
@@ -194,9 +232,6 @@
                             }
                         })
                     },
-                    edit(client){
-                        this.editForm.open = true;
-                    }
                 }
             });
             
