@@ -174,6 +174,9 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'nombre' => 'name',
+        'redirección' => 'redirect'
+    ],
 
 ];
