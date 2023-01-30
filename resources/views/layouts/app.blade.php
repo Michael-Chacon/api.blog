@@ -9,6 +9,13 @@
 
         <!-- Fonts -->
         <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
+        {{-- vue js --}}
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+        {{-- Axios --}}
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        {{-- Sweet Alert --}}
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -31,5 +38,6 @@
                 {{ $slot }}
             </main>
         </div>
+        @stack('js')
     </body>
 </html>
