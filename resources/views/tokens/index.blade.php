@@ -68,10 +68,7 @@
                                         <a v-on:click="" class="pr-2 hover:text-green-600 cursor-pointer">
                                             Ver
                                         </a>
-                                        <a v-on:click="" class="px-2 hover:text-blue-600 cursor-pointer">
-                                            Editar
-                                        </a>
-                                        <a v-on:click="" class="pl-2 hover:text-red-600 cursor-pointer">
+                                        <a v-on:click="revoke(token)" class="pl-2 hover:text-red-600 cursor-pointer">
                                             Eliminar
                                         </a>
                                     </td>
@@ -117,6 +114,29 @@
                                 this.createForm.errors = _.flatten(_.toArray(error.response.data.errors));
                                 this.createForm.disabled = false;
                             });
+                    },
+                    revoke(token){
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, delete it!'
+                            }).then((result) => {
+                            if (result.isConfirmed) {
+                                axios.delete('/oauth/personal-access-tokens/' + token.id)
+                                .then(response => {
+                                    this.getTokens();
+                                })
+                                Swal.fire(
+                                'Deleted!',
+                                'Your file has been deleted.',
+                                'success'
+                                )
+                            }
+                        })
                     },
                 },
             });
