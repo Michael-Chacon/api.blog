@@ -5,6 +5,7 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
+use Mockery\Generator\StringManipulation\Pass\Pass;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -27,7 +28,16 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Passport::tokensExpireIn(now()->addSecond(60));
+        Passport::tokensCan([
+            'create-post' => 'Registrar un nuevo post',
+            'read-post' => 'Obtener los posts registrados',
+            'update-post' => 'Actualizar posts',
+            'delete-post' => 'Eliminar posts'
+        ]);
 
+        Passport::setDefaultScope([
+            'read-post'
+        ]);
         //
     }
 }

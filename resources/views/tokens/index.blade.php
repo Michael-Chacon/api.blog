@@ -34,6 +34,16 @@
                                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
                             </div>
                         </article>
+                        {{-- Scopes --}}
+                        <article v-if="scopes.length > 0" class="border-t border-gray-500">
+                            <x-input-label for="name" :value="__('Scopes:')" />
+                            <section v-for="scope in scopes">
+                                <x-input-label for="name">
+                                <input type="checkbox" name="scopes" :value="scope.id" v-model="createForm.scopesSelect">
+                                @{{ scope.id }}
+                                </x-input-label>
+                            </section>
+                        </article>
                         <article class="p-3 mt-3 text-white shadow rounded-lg flex justify-end items-center">
                             <x-secondary-button v-on:click="store" v-bind:disabled="createForm.disabled">
                                 Guardar
@@ -44,6 +54,7 @@
                 {{-- Mostrar los tokens --}}
                 <section v-if="tokens.length > 0" class="md:grid md:grid-cols-3 gap-6 text-white mt-10">
                     <section class="md:col-span-1">
+                        @{{ createForm.scopesSelect }}
                         <h3 class="text-center">
                             Listado de Access Tokens
                         </h3>
@@ -108,7 +119,9 @@
                 el: '#app',
                 data:{
                     tokens: [],
+                    scopes: [],
                     createForm:{
+                        scopesSelect: [],
                         errors: [],
                         name: null,
                         disabled: false,
@@ -120,13 +133,20 @@
                 },
                 mounted(){
                     this.getTokens();
+                    this.getScopes();
                 },
                 methods:{
+                    getScopes(){
+                        axios.get('/oauth/scopes')
+                        .then(response => {
+                            this.scopes = response.data;
+                        });
+                    },
                     getTokens(){
                         axios.get('/oauth/personal-access-tokens')
-                            .then(response => {
-                                this.tokens = response.data;
-                            });
+                        .then(response => {
+                            this.tokens = response.data;
+                        });
                     },
                     show(token){
                         this.showToken.open = true;
