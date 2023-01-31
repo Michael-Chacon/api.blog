@@ -65,7 +65,7 @@
                                         @{{token.name}}
                                     </td>
                                     <td class="flex text-white divide-x divide-gray-500 py-3">
-                                        <a v-on:click="" class="pr-2 hover:text-green-600 cursor-pointer">
+                                        <a v-on:click="show(token)" class="pr-2 hover:text-green-600 cursor-pointer">
                                             Ver
                                         </a>
                                         <a v-on:click="revoke(token)" class="pl-2 hover:text-red-600 cursor-pointer">
@@ -79,6 +79,28 @@
                 </section>
             </div>
         </div>
+        {{-- Modal show client --}}
+        <x-dialog-modal modal="showToken.open">
+            <x-slot name="title">
+                Ver datos del cliente
+            </x-slot>
+            <x-slot name="content" class="w-full">
+                <section class="space-y-2 overflow-auto">
+                    <p>
+                        <span class="font-bold">
+                        TOKEN_ID:
+                    </span>
+                    <span v-text="showToken.id" class="text-sm"></span>
+                </p>
+            </p>
+            </section>
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button v-on:click="showToken.open = false" type="button" class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-gray-50 hover:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </x-slot>
+        </x-dialog-modal>
     </main>
     @push('js')
         <script>
@@ -91,6 +113,10 @@
                         name: null,
                         disabled: false,
                     },
+                    showToken:{
+                        open: false,
+                        id: '',
+                    },
                 },
                 mounted(){
                     this.getTokens();
@@ -101,6 +127,10 @@
                             .then(response => {
                                 this.tokens = response.data;
                             });
+                    },
+                    show(token){
+                        this.showToken.open = true;
+                        this.showToken.id = token.id;
                     },
                     store(){
                         this.createForm.disabled = true;
