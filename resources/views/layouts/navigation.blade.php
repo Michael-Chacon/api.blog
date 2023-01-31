@@ -39,7 +39,11 @@
                         </x-dropdown-link>
 
                         <x-dropdown-link :href="route('client.index')">
-                            {{ __('New token') }}
+                            {{ __('New Client') }}
+                        </x-dropdown-link>
+
+                        <x-dropdown-link :href="route('tokens.index')">
+                            {{ __('API tokens') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -87,7 +91,13 @@
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
-
+                <x-responsive-nav-link :href="route('client.index')">
+                    {{ __('New Client') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('tokens.index')">
+                    {{ __('New Token') }}
+                </x-responsive-nav-link>
+                
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
